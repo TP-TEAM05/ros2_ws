@@ -8,7 +8,7 @@ ROS2 Workspace for car controller
 ## Setup Instructions
 Setup instructions for using and developing car controller.
 
-### Prerequisities
+### Prerequisities
 - Library `ros-humble-ros-base` is installed
 - Library `nlohmann-json3-dev` is installed
 - Library `rpi.gpio` is installed
