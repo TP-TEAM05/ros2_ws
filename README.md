@@ -21,4 +21,6 @@ Setup instructions for using and developing car controller.
 
 - Go to the workspace folder `cd ~/ros2_ws`
 
-- Pre-build the ROS2 workspace. This will create workspace files. Now run `~/ros2_ws/install/setup.bash`.
+- Pre-build the ROS2 workspace. This will create workspace files. Now run `source ~/ros2_ws/install/setup.bash`.
+
+- Build the ROS2. `colcon build`
