@@ -26,7 +26,7 @@ using json = nlohmann::ordered_json;
 #define IP_ADDR "192.168.20.200"
 
 float lon, lat, hacc;
-uint32_t gps_direction;
+int gps_direction;
 
 void loadParams(std::string &ip, std::string &port)
 {
@@ -50,10 +50,10 @@ public:
       : Node("udp_sub"),
         sockfd_(-1)
   {
-    subscription_ = this->create_subscription<std_msgs::msg::String>(
+    subscription_sensors = this->create_subscription<std_msgs::msg::String>(
         "topic_from_serial", 10, std::bind(&MinimalSubscriber::topic_callback, this, _1));
 
-    subscription_2 = this->create_subscription<std_msgs::msg::String>(
+    subscription_gps = this->create_subscription<std_msgs::msg::String>(
         "gps", 10, std::bind(&MinimalSubscriber::gps_callback, this, _1));
 
     // Setup UDP socket
@@ -83,16 +83,17 @@ private:
   void topic_callback(const std_msgs::msg::String &msg)
   {
     std::vector<uint8_t> buffer;
-    // RCLCPP_INFO(this->get_logger(), "I heard: '%s'", msg.data.c_str());
+    RCLCPP_INFO(this->get_logger(), "[SENSORS_RAW]: '%s'", msg.data.c_str());
 
     // parsing the data to JSON
-    const std ::string message = msg.data; // here we expect to come data as <A,B,C,D,E,F,G,H,I>
-    std::string vin, dist_ultrasonic_front, dist_ultrasonic_rear, dist_lidar, speed_front_left, speed_front_right, speed_rear_left, speed_rear_right, speed_mean;
+    const std ::string message = msg.data; // here we expect to come data as <A,B,C,D,E,F,G,H,I,J,K,L>
+    std::string vin, dist_ultrasonic_front, dist_ultrasonic_rear, dist_lidar, speed_front_left, speed_front_right, speed_rear_left, speed_rear_right, speed_mean, voltage0, voltage1, voltage2;
 
-    sscanf(message.c_str(), "<%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,]>", &dist_ultrasonic_front[0], &dist_ultrasonic_rear[0], &dist_lidar[0], &speed_front_left[0], &speed_rear_right[0],
-           &speed_rear_left[0], &speed_front_right[0], &speed_mean[0]);
+    sscanf(message.c_str(), "<%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,]>",
+          &dist_ultrasonic_front[0], &dist_ultrasonic_rear[0], &dist_lidar[0], &speed_front_left[0],
+          &speed_rear_right[0], &speed_rear_left[0], &speed_front_right[0], &speed_mean[0], &voltage0[0], &voltage1[0], &voltage2[0]);
 
-    vin = "C4RF117S7U0000001";
+    vin = "C4RF117S7U0000002";
 
     boost::posix_time::ptime t = boost::posix_time::microsec_clock::universal_time();
     std::string timestamp_iso = to_iso_extended_string(t) + "Z";
@@ -118,6 +119,9 @@ private:
     vehicle["speed_front_right"] = std::stof(speed_front_right);
     vehicle["speed_rear_left"] = std::stof(speed_rear_left);
     vehicle["speed_rear_right"] = std::stof(speed_rear_right);
+    vehicle["voltage0"] = std::stof(voltage0);
+    vehicle["voltage1"] = std::stof(voltage1);
+    vehicle["voltage2"] = std::stof(voltage2);
     vehicle["gps_horizontal_accuracy"] = hacc;
     json_to_send["vehicle"] = vehicle;
 
@@ -126,10 +130,9 @@ private:
     // Send message to UDP sever
     if (sendto(sockfd_, str_to_send.c_str(), str_to_send.length(), 0, (struct sockaddr *)&servaddr_, sizeof(servaddr_)) < 0)
     {
-      // RCLCPP_INFO(this->get_logger(), "Error sending message");
+      RCLCPP_ERROR_SKIPFIRST(this->get_logger(), "Error sending message");
     }
 
-    RCLCPP_INFO(this->get_logger(), "JSON sent");
     // print the JSON into RCCLP_INFO
     RCLCPP_INFO(this->get_logger(), "%s", str_to_send.c_str());
   }
@@ -138,22 +141,23 @@ private:
   void gps_callback(const std_msgs::msg::String &msg)
   {
     float lon_local, lat_local, hacc_local;
-    uint32_t gps_direction_local;
+    int gps_direction_local;
     std::vector<uint8_t>
         buffer;
-    // RCLCPP_INFO(this->get_logger(), "I heard from GPS: '%s'", msg.data.c_str());
+        
+    RCLCPP_INFO(this->get_logger(), "I heard from GPS: '%s'", msg.data.c_str());
 
     // parsing the data to global variables
     const std ::string message = msg.data;
-    sscanf(message.c_str(), "<%f,%f,%f,%u>", &lon_local, &lat_local, &hacc_local, &gps_direction_local);
+    sscanf(message.c_str(), "<%f,%f,%f,%i>", &lon_local, &lat_local, &hacc_local, &gps_direction_local);
     lon = lon_local;
     lat = lat_local;
     hacc = hacc_local;
     gps_direction = gps_direction_local;
   }
 
-  rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription_;
-  rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription_2;
+  rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription_sensors;
+  rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription_gps;
   int sockfd_;
   struct sockaddr_in servaddr_;
 };
