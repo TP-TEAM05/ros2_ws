@@ -10,10 +10,16 @@ Setup instructions for using and developing car controller.
 
 ### Prerequisities
 - ROS2 Humble is already setup. [Installation Guide](https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debs.html)
+- - Only use `ros-humble-ros-base` and `ros-dev-tools`
 - Library `nlohmann-json3-dev` is installed
 - Library `rpi.gpio` is installed
 - Library `libcurl4-openssl-dev` is installed
 - Library `libboost-all-dev` is installed
+
+```bash
+sudo apt install nlohmann-json3-dev libcurl4-openssl-dev libboost-all-dev
+pip3 install RPi.GPIO
+```
 
 ### Steps
 
