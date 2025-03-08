@@ -21,14 +21,13 @@
 using std::placeholders::_1;
 using json = nlohmann::ordered_json;
 
-// UDP client, use udp_client_config to define UDP server IP:port
-#define PORT 4040
-#define IP_ADDR "192.168.20.200"
-
 float lon, lat, hacc;
 int gps_direction;
+std::string vin;
 
-void loadParams(std::string &ip, std::string &port)
+
+// Function to load the parameters from the udp_client_config
+void loadParams(std::string &ip, std::string &port, std::string &car_vin)
 {
   std::ifstream file("/home/ubuntu/ros2_ws/src/car_to_backend/src/udp_client_config");
 
@@ -39,6 +38,7 @@ void loadParams(std::string &ip, std::string &port)
 
   file >> ip;
   file >> port;
+  file >> car_vin;
 
   file.close();
 }
@@ -63,7 +63,7 @@ public:
     }
 
     std::string ip, port;
-    loadParams(ip, port);
+    loadParams(ip, port, vin);
 
     memset(&servaddr_, 0, sizeof(servaddr_));
     servaddr_.sin_family = AF_INET;
@@ -87,13 +87,16 @@ private:
 
     // parsing the data to JSON
     const std ::string message = msg.data; // here we expect to come data as <A,B,C,D,E,F,G,H,I,J,K,L>
-    std::string vin, dist_ultrasonic_front, dist_ultrasonic_rear, dist_lidar, speed_front_left, speed_front_right, speed_rear_left, speed_rear_right, speed_mean, voltage0, voltage1, voltage2;
+    std::string dist_ultrasonic_front, dist_ultrasonic_rear, dist_lidar, speed_front_left, speed_front_right, speed_rear_left, speed_rear_right, speed_mean, voltage0, voltage1, voltage2;
 
     sscanf(message.c_str(), "<%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,]>",
           &dist_ultrasonic_front[0], &dist_ultrasonic_rear[0], &dist_lidar[0], &speed_front_left[0],
           &speed_rear_right[0], &speed_rear_left[0], &speed_front_right[0], &speed_mean[0], &voltage0[0], &voltage1[0], &voltage2[0]);
 
-    vin = "C4RF117S7U0000002";
+    if (vin.empty())
+    {
+      vin = "C4RF117S7U0000002";
+    }
 
     boost::posix_time::ptime t = boost::posix_time::microsec_clock::universal_time();
     std::string timestamp_iso = to_iso_extended_string(t) + "Z";
