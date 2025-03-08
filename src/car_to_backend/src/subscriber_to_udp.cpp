@@ -24,10 +24,11 @@ using json = nlohmann::ordered_json;
 float lon, lat, hacc;
 int gps_direction;
 std::string vin;
+bool is_controlled_by_user;
 
 
 // Function to load the parameters from the udp_client_config
-void loadParams(std::string &ip, std::string &port, std::string &car_vin)
+void loadParams(std::string &ip, std::string &port, std::string &car_vin, std::string &is_controlled_by_user)
 {
   std::ifstream file("/home/ubuntu/ros2_ws/src/car_to_backend/src/udp_client_config");
 
@@ -39,6 +40,7 @@ void loadParams(std::string &ip, std::string &port, std::string &car_vin)
   file >> ip;
   file >> port;
   file >> car_vin;
+  file >> is_controlled_by_user;
 
   file.close();
 }
@@ -62,8 +64,16 @@ public:
       RCLCPP_INFO(this->get_logger(), "Cannot create socket");
     }
 
-    std::string ip, port;
-    loadParams(ip, port, vin);
+    std::string ip, port, controlled_by_user;
+    loadParams(ip, port, vin, controlled_by_user);
+
+    if (controlled_by_user.empty())
+    { 
+      // Car is by default not controlled by user
+      controlled_by_user = "0";
+    }
+
+    is_controlled_by_user = stoi(controlled_by_user);
 
     memset(&servaddr_, 0, sizeof(servaddr_));
     servaddr_.sin_family = AF_INET;
@@ -111,6 +121,7 @@ private:
     json_to_send["timestamp"] = time_str;
 
     vehicle["vin"] = vin.c_str();
+    vehicle["is_controlled_by_user"] = is_controlled_by_user;
     vehicle["speed"] = std::stof(speed_mean);
     vehicle["longitude"] = lon;
     vehicle["latitude"] = lat;
