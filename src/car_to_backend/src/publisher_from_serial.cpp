@@ -106,7 +106,7 @@ private:
     auto message = std_msgs::msg::String();
     message.data = buf_str;
 
-    RCLCPP_INFO(this->get_logger(), "DATA from RPI PICO: '%s'", buffer);
+    // RCLCPP_INFO(this->get_logger(), "DATA from RPI PICO: '%s'", buffer);
     
     publisher_->publish(message);
     //usleep(9500);

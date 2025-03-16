@@ -1,154 +1,112 @@
-#include <functional>
-#include <memory>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
 #include <unistd.h>
 #include <vector>
 #include <cstdint>
 #include <cstdlib>
-#include <string>
-#include <iostream>
-#include <cstring>
+#include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <termios.h>
 #include <fstream>
 
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
 
-// UDP server, use udp_server_config to define UDP client, from where the data comes from
-#define PORT 12345
-#define IP_ADDR "192.168.20.227"
-
+// Config file serial_config
 using std::placeholders::_1;
 using namespace std::chrono_literals;
 
-bool interfaceIsUp(const std::string& interfaceName){
-    std::ifstream ifs("/sys/class/net/" + interfaceName + "/operstate");
-    if (!ifs){
-        return false;
-    }
-
-    std::string status;
-    ifs >> status;
-
-    return (status == "up");
-}
-
-void loadParams(std::string& ip, std::string& port){
-  std::ifstream file("/home/ubuntu/ros2_ws/src/car_to_backend/src/udp_server_config");
+void loadParams(std::string& dev_name){
+  std::ifstream file("/home/ubuntu/ros2_ws/src/car_to_backend/src/serial_write_config");
 
   if (!file){
-      perror("UDP server config file not found");
+      perror("Serial config file not found");
   }
 
-  file >> ip;
-  file >> port;
-
+  file >> dev_name;
   file.close();
-  }
+}
 
-class MinimalPublisher : public rclcpp::Node
+class MinimalSubscriber : public rclcpp::Node
 {
 public:
-  MinimalPublisher()
-      : Node("udp_pub"), 
-        sockfd_(-1)
+  MinimalSubscriber()
+      : Node("serial_sub"), 
+        sockfd_(-1),
+        fd_(-1)
   {
-    publisher_ = this->create_publisher<std_msgs::msg::String>("car_controls", 10);
-    timer_ = this->create_wall_timer(10ms, std::bind(&MinimalPublisher::timer_callback, this));
+    subscription_ = this->create_subscription<std_msgs::msg::String>(
+        "car_controls", 10, std::bind(&MinimalSubscriber::topic_callback, this, _1));
 
-    // Setup UDP socket
-    if ((sockfd_ = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
-    {
-        RCLCPP_INFO(this->get_logger(), "Cannot create socket");
-    }
-    else{
-        RCLCPP_INFO(this->get_logger(), "Socket created!");
-    }
+    std::string device;
+    loadParams(device);
 
-    std::string ip, port;
-    loadParams(ip, port);
-
-    memset(&servaddr_, 0, sizeof(servaddr_));
-    memset(&servaddr_, 0, sizeof(cliaddr_));
-    servaddr_.sin_family = AF_INET;
-    servaddr_.sin_port = htons(stoi(port)); // server_port
-    servaddr_.sin_addr.s_addr = inet_addr(ip.c_str());  // server_ip
-
-    // Set timeout options to handle no new traffic issues
-    struct timeval tv;
-    tv.tv_sec = 0;  // 1s
-    tv.tv_usec = 10;   
-    setsockopt(sockfd_, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof(tv));
-
-    if (bind(sockfd_, (struct sockaddr *)&servaddr_, sizeof(servaddr_)) < 0){
-        RCLCPP_INFO(this->get_logger(), "Binding error!");
-    }
-    else{
-        RCLCPP_INFO(this->get_logger(), "Binded!");
+    // Setup serial
+    // Open the serial port "/dev/ttyACM0" for writing
+    fd_ = open(device.c_str(), O_WRONLY);
+    if (fd_ == -1) {
+        perror("Error opening serial port");
     }
 
-    memset(buff_, 0, 256);  // initializes class buffer
-    memcpy(buff_, "<0,0,0>", 8);
+    // Configure the serial port
+    struct termios tty;
+    if (tcgetattr(fd_, &tty) != 0) {
+        perror("Error getting serial port attributes");
+        close(fd_);
+    }
+
+    // Set the baud rate to 9600
+    cfsetispeed(&tty, B115200);
+    cfsetospeed(&tty, B115200);
+
+    // Set other serial port parameters
+    tty.c_cflag |= (CLOCAL | CREAD);
+    tty.c_cflag &= ~PARENB;
+    tty.c_cflag &= ~CSTOPB;
+    tty.c_cflag &= ~CSIZE;
+    tty.c_cflag |= CS8;
+
+    // Set input mode (non-canonical, no echo)
+    tty.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
+
+    // Apply the configuration
+    if (tcsetattr(fd_, TCSANOW, &tty) != 0) {
+        perror("Error setting serial port attributes");
+        close(fd_);
+    }
   }
 
-  ~MinimalPublisher()
+  ~MinimalSubscriber()
   {
-    if (sockfd_ != 1)
+    if (fd_ != 1)
     {
-      close(sockfd_);
+      close(fd_);
     }
+    RCLCPP_INFO(this->get_logger(), "Port closed!");
   }
 
 private:
-  void timer_callback()
-  //void topic_callback()
+  void topic_callback(const std_msgs::msg::String &msg)
   {
-    char buffer[256] = {0}; // local buffer
+    std::vector<uint8_t> buffer;
+    RCLCPP_INFO(this->get_logger(), "I heard: '%s'", msg.data.c_str());
+    std::string convert;
 
-    // Set default car controls into local buffer <0,0,0>
-
-    // Read message from UDP client
-    recvfrom(sockfd_, buffer, 256, 0, (struct sockaddr *)&cliaddr_, (socklen_t *)sizeof(cliaddr_));
-
-    /*
-    if (strlen(buffer) <= 0){ // the buffer is empty -> timeout
-        RCLCPP_INFO(this->get_logger(), "TIMEOUT!!!");
-        if (interfaceIsUp("wlan0")){
-            // timed out due to constant velocity -> resend the stored class buffer
-            memcpy(buffer, buff_, 256);
-        }
-        else{
-            RCLCPP_INFO(this->get_logger(), "Interface is down!");
-            memcpy(buffer, "<0,0,0>", 8);
-        }
-        // else -> the connection is lost -> stop the car
+    ssize_t bytesWrite = write(fd_, msg.data.c_str(), strlen(msg.data.c_str()));
+    if (bytesWrite == -1){
+        perror("Error writing to serial port");
+        close(fd_);
     }
-    else{   // saves the read data from socket to class buffer
-      memcpy(buff_, buffer, 256);
-    }*/
-
-    std::string buf_str(buffer);
-
-    auto message = std_msgs::msg::String();
-    message.data = buf_str;
-
-    RCLCPP_INFO(this->get_logger(), "CONTROLS from UDP '%s'", message.data.c_str());
-    
-    publisher_->publish(message);
   }
 
-  rclcpp::TimerBase::SharedPtr timer_;
-  rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
   int sockfd_;
-  struct sockaddr_in servaddr_, cliaddr_;
-  char buff_[256];
+  rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription_;
+  int fd_;
 };
 
 int main(int argc, char *argv[])
 {
   rclcpp::init(argc, argv);
-  auto node = std::make_shared<MinimalPublisher>();
+  auto node = std::make_shared<MinimalSubscriber>();
   rclcpp::spin(node);
   rclcpp::shutdown();
   return 0;

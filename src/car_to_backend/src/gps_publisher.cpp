@@ -320,7 +320,7 @@ void parse_hpposllh()
             std::cout << "Height (ellipsoid): " << hellip << " mm, Height (MSL): " << hmsl << " mm" << std::endl;
             std::cout << "hAcc: " << hAcc / 10.0 << " mm, vAcc: " << vAcc / 10.0 << " mm" << std::endl;
         }
-        std::cout << "GPS Found" << std::endl;
+        // std::cout << "GPS Found" << std::endl;
     }
 }
 
@@ -442,7 +442,7 @@ void ntrip_client_thread()
         if (bytesRead > 0)
         {
             write(ser, buffer, bytesRead); // Write directly to serial port
-            std::cout << "Written RTK" << std::endl;
+            // std::cout << "Written RTK" << std::endl;
         }
     }
 

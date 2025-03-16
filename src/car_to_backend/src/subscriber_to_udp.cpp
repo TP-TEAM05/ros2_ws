@@ -93,7 +93,7 @@ private:
   void topic_callback(const std_msgs::msg::String &msg)
   {
     std::vector<uint8_t> buffer;
-    RCLCPP_INFO(this->get_logger(), "[SENSORS_RAW]: '%s'", msg.data.c_str());
+    // RCLCPP_INFO(this->get_logger(), "[SENSORS_RAW]: '%s'", msg.data.c_str());
 
     // parsing the data to JSON
     const std ::string message = msg.data; // here we expect to come data as <A,B,C,D,E,F,G,H,I,J,K,L>
@@ -148,7 +148,7 @@ private:
     }
 
     // print the JSON into RCCLP_INFO
-    RCLCPP_INFO(this->get_logger(), "%s", str_to_send.c_str());
+    // RCLCPP_INFO(this->get_logger(), "%s", str_to_send.c_str());
   }
 
 private:
@@ -159,7 +159,7 @@ private:
     std::vector<uint8_t>
         buffer;
         
-    RCLCPP_INFO(this->get_logger(), "I heard from GPS: '%s'", msg.data.c_str());
+    // RCLCPP_INFO(this->get_logger(), "I heard from GPS: '%s'", msg.data.c_str());
 
     // parsing the data to global variables
     const std ::string message = msg.data;
