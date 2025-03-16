@@ -30,7 +30,7 @@ class MinimalSubscriber : public rclcpp::Node
 {
 public:
   MinimalSubscriber()
-      : Node("serial_sub"), 
+      : Node("car_controls"), 
         sockfd_(-1),
         fd_(-1)
   {
@@ -41,7 +41,6 @@ public:
     loadParams(device);
 
     // Setup serial
-    // Open the serial port "/dev/ttyACM0" for writing
     fd_ = open(device.c_str(), O_WRONLY);
     if (fd_ == -1) {
         perror("Error opening serial port");

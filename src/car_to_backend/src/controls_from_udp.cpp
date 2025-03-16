@@ -12,9 +12,13 @@
 #include <cstring>
 #include <fstream>
 
+// Include the nlohmann/json header file
+#include "nlohmann/json.hpp"
+
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
 
+using json = nlohmann::json;
 using std::placeholders::_1;
 using namespace std::chrono_literals;
 
@@ -113,17 +117,30 @@ private:
     if (nbytes < 0) {
       // Could be a timeout, EAGAIN, or other error
       RCLCPP_INFO(this->get_logger(), "TIMEOUT or error receiving UDP.");
-      // You can decide what to do on timeout here:
-      // e.g., buffer remains empty => fallback to your stored buff_
-      // ...
       return;
     }
 
-    // If we got data, publish it
     std::string buf_str(buffer);
+    
+    // Parse JSON and extract the "message" field
+    std::string extracted_message;
+    try {
+      json j = json::parse(buf_str);
+      // Check if the keys exist
+      if(j.contains("updateVehicleDecision") && j["updateVehicleDecision"].contains("message")){
+        extracted_message = j["updateVehicleDecision"]["message"].get<std::string>();
+      } else {
+        RCLCPP_ERROR(this->get_logger(), "JSON does not contain expected keys.");
+      }
+    } catch (const std::exception &e) {
+      RCLCPP_ERROR(this->get_logger(), "JSON parsing error: %s", e.what());
+    }
+
+    // Publish only the extracted message part
     auto message = std_msgs::msg::String();
-    message.data = buf_str;
+    message.data = extracted_message;
     publisher_->publish(message);
+    // RCLCPP_INFO(this->get_logger(), "[UDP_PUB] Published message: %s", extracted_message.c_str());
   }
 
   rclcpp::TimerBase::SharedPtr timer_;
