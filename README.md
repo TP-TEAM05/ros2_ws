@@ -23,7 +23,7 @@ pip3 install RPi.GPIO
 
 ### Steps
 
-- Clone the repository `git clone git@github.com:TP-TEAM05/ros2_ws.git ~/ros2_ws`
+- Clone the repository `git clone git@github.com:ReCoFIIT/ros2_ws.git ~/ros2_ws`
 
 - Go to the workspace folder `cd ~/ros2_ws`
 
