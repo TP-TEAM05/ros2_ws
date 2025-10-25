@@ -29,4 +29,11 @@ RUN . /opt/ros/humble/setup.sh && \
 	rosdep install -i --from-path src --rosdistro humble -y && \
 	colcon build
 
+WORKDIR /ros2_ws2
+
+COPY new_ros ./src
+RUN . /opt/ros/humble/setup.sh && \
+	rosdep install -i --from-path src --rosdistro humble -y && \
+	colcon build
+
 ENTRYPOINT ["/bin/bash"]
