@@ -15,7 +15,7 @@ class MinimalSubscriber: public rclcpp::Node
     private:
     void topic_callback(const sensor_msgs::msg::LaserScan::SharedPtr msg) const
     {
-      RCLCPP_INFO(this->get_logger(), "I heard: '%s'", msg->angle_min.c_str());
+      RCLCPP_INFO(this->get_logger(), "I heard: '%f'", msg->angle_min);
     }
     rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr subscription_;
 };
