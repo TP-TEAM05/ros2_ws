@@ -16,8 +16,11 @@ find_package(nav_msgs REQUIRED)
 
 
 add_executable(my_node src/my_node.cpp)
+add_executable(gps_pub_sim src/gps_pub_sim.cpp)
+
 
 ament_target_dependencies(my_node rclcpp sensor_msgs nav_msgs)
+ament_target_dependencies(gps_pub_sim rclcpp sensor_msgs)
 
 
 target_include_directories(my_node PUBLIC
@@ -25,7 +28,9 @@ target_include_directories(my_node PUBLIC
   $<INSTALL_INTERFACE:include>)
 target_compile_features(my_node PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 
-install(TARGETS my_node
+install(TARGETS 
+  my_node
+  gps_pub_sim
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)

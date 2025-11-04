@@ -1,0 +1,4 @@
+<launch>
+  <node pkg="tp5_ros" exec="gps_pub_sim" name="sim"/>
+  <node pkg="tp5_ros" exec="my_node" name="my_node"/>
+</launch>
