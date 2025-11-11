@@ -8,6 +8,9 @@
 #include <memory>
 #include <functional>
 #include <fstream>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
 
 
 #include <cstdio>
@@ -47,7 +50,7 @@ class MinimalSubscriber: public rclcpp::Node
   public:
     MinimalSubscriber()
     : Node("minimal_subscriber"),
-    sockfd_(-1){
+      sockfd_(-1){
       subscription_ = this->create_subscription<sensor_msgs::msg::LaserScan>(
         "scan", rclcpp::SensorDataQoS(), std::bind(&MinimalSubscriber::topic_callback, this, std::placeholders::_1));
       subscription_2 = this->create_subscription<sensor_msgs::msg::NavSatFix>(
@@ -76,26 +79,26 @@ class MinimalSubscriber: public rclcpp::Node
       servaddr_.sin_port = htons(stoi(port));
       servaddr_.sin_addr.s_addr = inet_addr(ip.c_str());
 
-      float dist_lisdar;
+      dist_lidar = 0.0f;  // Initialize the member variable (not declaring a new one)
     }
     private:
-      void topic_callback(const sensor_msgs::msg::LaserScan::SharedPtr msg) const {
+      void topic_callback(const sensor_msgs::msg::LaserScan::SharedPtr msg) {
           RCLCPP_INFO(this->get_logger(), "Angle_min: %.3f", msg->angle_min);
           if (!msg->ranges.empty()) {
             RCLCPP_INFO(this->get_logger(), "Range[0]: %.3f", msg->ranges[(int)(msg->range_min+msg->range_max)/2]);
-            dist_lidar = msg->ranges[(int)(msg->range_min+msg->range_max)/2]
-            //TODO:: Calculate speed here 
+            dist_lidar = msg->ranges[(int)(msg->range_min+msg->range_max)/2];
           } else {
             RCLCPP_WARN(this->get_logger(), "LaserScan ranges[] is empty");
           }
         }
 
-      void topic_callback_2(const sensor_msgs::msg::NavSatFix::SharedPtr msg) const {
-        RCLCPP_INFO(this->get_logger(), "Longitude: %f", msg->longitude); // %s + c_str()
+      void topic_callback_3(const nav_msgs::msg::Odometry::SharedPtr msg) {
+        RCLCPP_INFO(this->get_logger(), "Longitude: %f", msg->twist.twist.linear.x); // %s + c_str()
+        //TODO : calculate speed here
       }
       
-      void topic_callback_3(const nav_msgs::msg::Odometry::SharedPtr msg) const {
-        RCLCPP_INFO(this->get_logger(), "Test: %s", msg->child_frame_id.c_str()); // %s + c_str()
+      void topic_callback_2(const sensor_msgs::msg::NavSatFix::SharedPtr msg) {
+        RCLCPP_INFO(this->get_logger(), "Test: %f", msg->longitude); // %s + c_str()
 
         
         boost::posix_time::ptime t = boost::posix_time::microsec_clock::universal_time();
@@ -142,6 +145,11 @@ class MinimalSubscriber: public rclcpp::Node
     rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr subscription_;
     rclcpp::Subscription<sensor_msgs::msg::NavSatFix>::SharedPtr subscription_2;
     rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr subscription_3;
+    
+    // Member variables
+    int sockfd_;
+    struct sockaddr_in servaddr_;
+    float dist_lidar;
 };
 
 int main(int argc, char ** argv)

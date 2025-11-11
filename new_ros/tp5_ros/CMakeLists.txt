@@ -13,14 +13,17 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
+find_package(ackermann_msgs REQUIRED)
 
 
 add_executable(my_node src/my_node.cpp)
 add_executable(gps_pub_sim src/gps_pub_sim.cpp)
+add_executable(udp_to_pub src/udp_to_pub.cpp)
 
 
 ament_target_dependencies(my_node rclcpp sensor_msgs nav_msgs)
 ament_target_dependencies(gps_pub_sim rclcpp sensor_msgs)
+ament_target_dependencies(udp_to_pub rclcpp ackermann_msgs)
 
 
 target_include_directories(my_node PUBLIC
@@ -31,6 +34,7 @@ target_compile_features(my_node PUBLIC c_std_99 cxx_std_17)  # Require C99 and C
 install(TARGETS 
   my_node
   gps_pub_sim
+  udp_to_pub
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
