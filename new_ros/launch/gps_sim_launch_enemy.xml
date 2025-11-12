@@ -1,8 +1,8 @@
 <launch>
   <node pkg="tp5_ros" exec="gps_pub_sim" name="sim">
-    <remap from="gps/fix" to="gps_enemy">
+    <remap from="gps/fix" to="gps_enemy"/>
   </node>
-  <node pkg="tp5_ros" exec="my_node" name="my_node">
+  <node pkg="tp5_ros" exec="enemy_node" name="enemy_node">
     <remap from="odom" to="/opp_racecar/odom"/>
     <remap from="gps/fix" to="gps_enemy"/>
     <remap from="scan" to="/opp_scan"/>

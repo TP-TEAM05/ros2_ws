@@ -17,6 +17,7 @@ find_package(ackermann_msgs REQUIRED)
 
 
 add_executable(my_node src/my_node.cpp)
+add_executable(enemy_node src/enemy_node.cpp)
 add_executable(gps_pub_sim src/gps_pub_sim.cpp)
 add_executable(udp_to_pub src/udp_to_pub.cpp)
 
@@ -24,7 +25,7 @@ add_executable(udp_to_pub src/udp_to_pub.cpp)
 ament_target_dependencies(my_node rclcpp sensor_msgs nav_msgs)
 ament_target_dependencies(gps_pub_sim rclcpp sensor_msgs)
 ament_target_dependencies(udp_to_pub rclcpp ackermann_msgs)
-
+ament_target_dependencies(enemy_node rclcpp sensor_msgs nav_msgs)
 
 target_include_directories(my_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -35,6 +36,7 @@ install(TARGETS
   my_node
   gps_pub_sim
   udp_to_pub
+  enemy_node
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
