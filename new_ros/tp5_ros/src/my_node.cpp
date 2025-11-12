@@ -80,6 +80,7 @@ class MinimalSubscriber: public rclcpp::Node
       servaddr_.sin_addr.s_addr = inet_addr(ip.c_str());
 
       dist_lidar = 0.0f;  // Initialize the member variable (not declaring a new one)
+      speed = 0.0f;
     }
     private:
       void topic_callback(const sensor_msgs::msg::LaserScan::SharedPtr msg) {
@@ -99,7 +100,7 @@ class MinimalSubscriber: public rclcpp::Node
         double vz = msg->twist.twist.linear.z;
 
         // Výpočet celkovej rýchlosti (m/s)
-        double speed = std::sqrt(vx * vx + vy * vy + vz * vz);
+        speed = std::sqrt(vx * vx + vy * vy + vz * vz);
 
         // Vypíš do ROS logu
         RCLCPP_INFO(this->get_logger(), "Current speed: %.2f m/s (vx=%.2f, vy=%.2f, vz=%.2f)", speed, vx, vy, vz);
@@ -126,7 +127,7 @@ class MinimalSubscriber: public rclcpp::Node
 
         vehicle["vin"] = vin.c_str();
         vehicle["is_controlled_by_user"] = is_controlled_by_user;
-        vehicle["speed"] = std::stof("10"); //should be calculated from odom
+        vehicle["speed"] = speed;
         vehicle["longitude"] = msg->longitude;
         vehicle["latitude"] = msg->latitude;
         vehicle["gps_direction"] = msg->position_covariance_type;
@@ -161,6 +162,7 @@ class MinimalSubscriber: public rclcpp::Node
     int sockfd_;
     struct sockaddr_in servaddr_;
     float dist_lidar;
+    double speed;
 };
 
 int main(int argc, char ** argv)
