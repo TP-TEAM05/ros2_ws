@@ -93,8 +93,19 @@ class MinimalSubscriber: public rclcpp::Node
         }
 
       void topic_callback_3(const nav_msgs::msg::Odometry::SharedPtr msg) {
-        RCLCPP_INFO(this->get_logger(), "Longitude: %f", msg->twist.twist.linear.x); // %s + c_str()
-        //TODO : calculate speed here
+        // Extrahuj lineárne zložky rýchlosti
+        double vx = msg->twist.twist.linear.x;
+        double vy = msg->twist.twist.linear.y;
+        double vz = msg->twist.twist.linear.z;
+
+        // Výpočet celkovej rýchlosti (m/s)
+        double speed = std::sqrt(vx * vx + vy * vy + vz * vz);
+
+        // Vypíš do ROS logu
+        RCLCPP_INFO(this->get_logger(), "Current speed: %.2f m/s (vx=%.2f, vy=%.2f, vz=%.2f)", speed, vx, vy, vz);
+
+        // Ulož si rýchlosť pre použitie v JSON správe
+        // current_speed_ = static_cast<float>(speed);
       }
       
       void topic_callback_2(const sensor_msgs::msg::NavSatFix::SharedPtr msg) {

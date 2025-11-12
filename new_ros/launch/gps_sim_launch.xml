@@ -3,4 +3,7 @@
   <node pkg="tp5_ros" exec="my_node" name="my_node">
     <remap from="odom" to="/ego_racecar/odom"/>
   </node>
+  <node pkg="tp5_ros" exec="udp_to_pub" name="udp_to_pub">
+    <remap from="car_controls" to="/drive"/>
+  </node>
 </launch>
