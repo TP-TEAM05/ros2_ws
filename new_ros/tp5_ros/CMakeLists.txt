@@ -17,12 +17,14 @@ find_package(ackermann_msgs REQUIRED)
 
 
 add_executable(my_node src/my_node.cpp)
+add_executable(my_node_carla src/my_node_carla.cpp)
 add_executable(enemy_node src/enemy_node.cpp)
 add_executable(gps_pub_sim src/gps_pub_sim.cpp)
 add_executable(udp_to_pub src/udp_to_pub.cpp)
 
 
 ament_target_dependencies(my_node rclcpp sensor_msgs nav_msgs)
+ament_target_dependencies(my_node_carla rclcpp sensor_msgs nav_msgs)
 ament_target_dependencies(gps_pub_sim rclcpp sensor_msgs)
 ament_target_dependencies(udp_to_pub rclcpp ackermann_msgs)
 ament_target_dependencies(enemy_node rclcpp sensor_msgs nav_msgs)
@@ -34,6 +36,7 @@ target_compile_features(my_node PUBLIC c_std_99 cxx_std_17)  # Require C99 and C
 
 install(TARGETS 
   my_node
+  my_node_carla
   gps_pub_sim
   udp_to_pub
   enemy_node
