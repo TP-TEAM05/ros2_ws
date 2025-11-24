@@ -11,6 +11,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <netdb.h>
 
 
 #include <cstdio>
@@ -77,7 +78,15 @@ class MinimalSubscriber: public rclcpp::Node
       memset(&servaddr_, 0, sizeof(servaddr_));
       servaddr_.sin_family = AF_INET;
       servaddr_.sin_port = htons(stoi(port));
-      servaddr_.sin_addr.s_addr = inet_addr(ip.c_str());
+      
+      struct hostent *host = gethostbyname(ip.c_str());
+      if (host == NULL) {
+          RCLCPP_ERROR(this->get_logger(), "Failed to resolve hostname: %s", ip.c_str());
+          servaddr_.sin_addr.s_addr = INADDR_NONE;
+      } else {
+          memcpy(&servaddr_.sin_addr, host->h_addr_list[0], host->h_length);
+          RCLCPP_INFO(this->get_logger(), "Resolved %s successfully", ip.c_str());
+      }
 
       dist_lidar = 0.0f;  // Initialize the member variable (not declaring a new one)
       speed = 0.0f;
