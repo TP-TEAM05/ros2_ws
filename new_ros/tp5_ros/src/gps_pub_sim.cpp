@@ -19,8 +19,8 @@
 
 using namespace std::chrono_literals;
 
-double globalLongitude = 17.0171259;
-double globalLatitude = 48.1540940;
+double globalLongitude = 17.071208;
+double globalLatitude = 48.154080851863625;
 double globalHorizontalAccuracy = 0.0;
 
 // Global variables

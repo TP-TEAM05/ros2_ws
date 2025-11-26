@@ -32,7 +32,8 @@ RUN . /opt/ros/humble/setup.sh && \
 WORKDIR /ros2_ws2
 
 COPY new_ros ./src
-RUN . /opt/ros/humble/setup.sh && \
+RUN apt update -y && \
+    . /opt/ros/humble/setup.sh && \
 	rosdep install -i --from-path src --rosdistro humble -y && \
 	colcon build
 

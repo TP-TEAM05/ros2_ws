@@ -81,7 +81,7 @@ public:
     // Set timeout options to handle no new traffic issues
     struct timeval tv;
     tv.tv_sec = 0;   // 0 seconds
-    tv.tv_usec = 10; // 10 microseconds
+    tv.tv_usec = 100; // 10 microseconds
     setsockopt(sockfd_, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof(tv));
 
     // Bind
