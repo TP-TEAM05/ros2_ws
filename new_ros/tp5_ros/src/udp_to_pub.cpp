@@ -36,7 +36,7 @@ bool interfaceIsUp(const std::string& interfaceName) {
 }
 
 void loadParams(std::string& ip, std::string& port) {
-  std::ifstream file("/ros2_ws2/src/tp5_ros/src/udp_server_config");
+  std::ifstream file("/confs/udp_server_config");
 
   if (!file) {
     perror("UDP server config file not found");
@@ -80,8 +80,8 @@ public:
 
     // Set timeout options to handle no new traffic issues
     struct timeval tv;
-    tv.tv_sec = 0;   // 0 seconds
-    tv.tv_usec = 100; // 10 microseconds
+    tv.tv_sec = 0.5;   // 0.5 seconds
+    
     setsockopt(sockfd_, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof(tv));
 
     // Bind
@@ -150,7 +150,7 @@ private:
     message.acceleration = 0.0;
     message.jerk = 0.0;
     publisher_->publish(message);
-    //RCLCPP_INFO(this->get_logger(), "[UDP_PUB] Published message: %s", extracted_message.c_str());
+    RCLCPP_INFO(this->get_logger(), "[UDP_PUB] Published message: %s", speed_str.c_str());
   }
 
   rclcpp::TimerBase::SharedPtr timer_;

@@ -30,7 +30,7 @@ std::string vin;
 
 void loadParams(std::string &ip, std::string &port, std::string &car_vin, std::string &is_controlled_by_user)
 {
-  std::ifstream file("/ros2_ws2/src/tp5_ros/src/udp_client_config");
+  std::ifstream file("/confs/udp_client_config");
 
   if (!file)
   {

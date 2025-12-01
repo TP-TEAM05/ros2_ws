@@ -1,0 +1,8 @@
+services:
+  sim:
+    image: my-ros2-car-controller:latest
+    build: .
+    volumes:
+      - ./confs:/confs
+    stdin_open: true
+    tty: true 
