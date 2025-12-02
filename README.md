@@ -30,3 +30,6 @@ pip3 install RPi.GPIO
 - Pre-build the ROS2 workspace. This will create workspace files. Now run `source ~/ros2_ws/install/setup.bash`.
 
 - Build the ROS2. `colcon build`
+
+- Running the Docker. `docker compose up -d --build`
+- Running the Docker. `docker exec -it ros2_ws-sim-1 /bin/bash`
