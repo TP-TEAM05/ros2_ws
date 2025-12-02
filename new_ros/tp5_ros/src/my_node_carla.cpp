@@ -26,11 +26,17 @@ using json = nlohmann::ordered_json;
 
 bool is_controlled_by_user;
 std::string vin;
-
+bool enemy;
 
 void loadParams(std::string &ip, std::string &port, std::string &car_vin, std::string &is_controlled_by_user)
 {
-  std::ifstream file("/confs/udp_client_config");
+
+  std::ifstream file;
+  if (enemy){
+    file.open("/confs/udp_client_enemy_config");
+  } else {
+    file.open("/confs/udp_client_config");
+  }
 
   if (!file)
   {
@@ -203,6 +209,16 @@ class MinimalSubscriber: public rclcpp::Node
 
 int main(int argc, char ** argv)
 {
+  if (argc < 2) {
+      enemy = false;
+  } else {
+      std::string arg1(argv[1]);
+      if (arg1.compare("enemy") == 0) {
+          enemy = true;
+      } else {
+          enemy = false;
+      }
+  }
   rclcpp::init(argc, argv);
   rclcpp::spin(std::make_shared<MinimalSubscriber>());
   rclcpp::shutdown();
