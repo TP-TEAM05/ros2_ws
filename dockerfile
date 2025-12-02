@@ -31,6 +31,9 @@ RUN . /opt/ros/humble/setup.sh && \
 
 WORKDIR /ros2_ws2
 
+RUN echo 'source /opt/ros/humble/setup.sh' >> /root/.bashrc
+RUN echo 'source install/setup.bash' >> /root/.bashrc
+
 COPY new_ros ./src
 RUN apt update -y && \
     . /opt/ros/humble/setup.sh && \
