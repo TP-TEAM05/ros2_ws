@@ -23,6 +23,9 @@ COPY src ./src
 RUN mkdir -p /home/ubuntu/ros2_ws/src/car_to_backend && \
     cp -r /ros2_ws/src/car_to_backend/src /home/ubuntu/ros2_ws/src/car_to_backend/
 
+# Copy config files 
+COPY confs /confs
+
 # Build the workspace
 RUN . /opt/ros/humble/setup.sh && \
 	apt update -y && apt upgrade -y && \

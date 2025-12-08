@@ -2,7 +2,11 @@ services:
   sim:
     image: my-ros2-car-controller:latest
     build: .
+    network_mode: host
     volumes:
       - ./confs:/confs
     stdin_open: true
-    tty: true 
+    tty: true
+    environment:
+      - ROS_DOMAIN_ID=2
+      - ROS_LOCALHOST_ONLY=0
