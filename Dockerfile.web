@@ -1,0 +1,41 @@
+# Multi-stage Dockerfile for Web Application (Docusaurus/Quasar/Static Sites)
+# Stage 1: Build the application
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci --only=production
+
+# Copy application source
+COPY . .
+
+# Build the application
+# This command should be adjusted based on your build script
+# For Docusaurus: npm run build (outputs to build/)
+# For Quasar: npm run build (outputs to dist/)
+RUN npm run build
+
+# Stage 2: Production - Nginx server
+FROM nginx:alpine
+
+# Copy custom nginx configuration
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY nginx-site.conf /etc/nginx/conf.d/default.conf
+
+# Copy built files from builder stage
+# Adjust the source path based on your build output directory
+# For Docusaurus, it's typically 'build'
+# For Quasar, it's typically 'dist/spa'
+COPY --from=builder /app/build /usr/share/nginx/html
+# Uncomment below and comment above for Quasar:
+# COPY --from=builder /app/dist/spa /usr/share/nginx/html
+
+# Expose port 80
+EXPOSE 80
+
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]

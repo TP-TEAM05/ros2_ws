@@ -1,0 +1,17 @@
+{
+  "name": "fiit-tp2025-team05-web",
+  "version": "1.0.0",
+  "description": "Web application for FIIT TP 2025 Team 05",
+  "scripts": {
+    "start": "echo 'Add your dev server start command here'",
+    "build": "echo 'Add your build command here'",
+    "serve": "echo 'Add your production serve command here'"
+  },
+  "keywords": [
+    "fiit",
+    "tp2025",
+    "team05"
+  ],
+  "author": "FIIT TP 2025 Team 05",
+  "license": "MIT"
+}

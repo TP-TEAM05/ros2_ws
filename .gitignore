@@ -4,3 +4,12 @@ log/**
 .gitignore
 .vscode
 CLAUDE.md
+
+# Web deployment
+logs/
+ssl/
+web/node_modules/
+web/build/
+web/dist/
+web/.docusaurus/
+web/.cache/

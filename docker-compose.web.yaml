@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  # ROS2 simulation service (existing)
+  sim:
+    image: my-ros2-car-controller:latest
+    build: 
+      context: .
+      dockerfile: dockerfile
+    network_mode: host
+    volumes:
+      - ./confs:/confs
+    stdin_open: true
+    tty: true
+    environment:
+      - ROS_DOMAIN_ID=2
+      - ROS_LOCALHOST_ONLY=0
+
+  # Web application service
+  web:
+    build:
+      context: ./web  # Path to your web application directory
+      dockerfile: ../Dockerfile.web
+    container_name: fiit-tp2025-web
+    ports:
+      - "80:80"
+      - "443:443"  # Uncomment when SSL is configured
+    volumes:
+      # Mount SSL certificates when available
+      # - ./ssl:/etc/nginx/ssl:ro
+      # Mount nginx logs for easier debugging
+      - ./logs/nginx:/var/log/nginx
+    restart: unless-stopped
+    networks:
+      - webnet
+
+networks:
+  webnet:
+    driver: bridge
