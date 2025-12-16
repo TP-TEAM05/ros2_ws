@@ -17,7 +17,10 @@ This guide provides instructions for deploying the web application (Docusaurus/Q
 ├── nginx-site.conf         # Site-specific Nginx configuration
 ├── docker-compose.web.yaml # Docker Compose configuration for web service
 └── web/                    # Your web application source code directory
+    ├── nginx.conf          # Copy of nginx.conf (required for Docker build)
+    ├── nginx-site.conf     # Copy of nginx-site.conf (required for Docker build)
     ├── package.json
+    ├── index.html          # Demo page (replace with your app)
     ├── src/
     └── ...
 ```
@@ -36,7 +39,13 @@ npx create-docusaurus@latest . classic
 
 # OR for Quasar application
 npm init quasar
+
+# Copy nginx configuration files to web directory
+cd ..
+cp nginx.conf nginx-site.conf web/
 ```
+
+**Important**: The nginx configuration files must be copied into the `web/` directory for the Docker build to work correctly.
 
 Ensure your `package.json` has the correct build script:
 - **Docusaurus**: `"build": "docusaurus build"` (outputs to `build/`)

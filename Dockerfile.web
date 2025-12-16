@@ -8,7 +8,8 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm ci --only=production
+# Use npm install if package-lock.json doesn't exist, otherwise use npm ci
+RUN if [ -f package-lock.json ]; then npm ci --omit=dev; else npm install --omit=dev; fi
 
 # Copy application source
 COPY . .
@@ -23,6 +24,7 @@ RUN npm run build
 FROM nginx:alpine
 
 # Copy custom nginx configuration
+# Note: nginx.conf and nginx-site.conf should be in your web application directory
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY nginx-site.conf /etc/nginx/conf.d/default.conf
 

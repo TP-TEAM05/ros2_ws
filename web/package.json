@@ -1,0 +1,15 @@
+{
+  "name": "fiit-tp2025-team05-demo",
+  "version": "1.0.0",
+  "description": "Demo web application for FIIT TP 2025 Team 05",
+  "scripts": {
+    "build": "mkdir -p build && cp index.html build/index.html"
+  },
+  "keywords": [
+    "fiit",
+    "tp2025",
+    "team05"
+  ],
+  "author": "FIIT TP 2025 Team 05",
+  "license": "MIT"
+}
