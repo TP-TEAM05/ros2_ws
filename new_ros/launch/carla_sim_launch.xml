@@ -1,8 +1,10 @@
 <launch>
   <node pkg="tp5_ros" exec="my_node_carla" name="my_node_carla">
-    <remap from="odom" to="/ego_racecar/odom"/>
+    <remap from="/odom" to="/ego_racecar/odom"/>
+    <remap from="/gps/fix" to="/carla/hero/gnss"/>
+    <remap from="/scan" to="/carla/hero/lidar"/>
   </node>
   <node pkg="tp5_ros" exec="udp_to_pub" name="udp_to_pub">
-    <remap from="car_controls" to="/drive"/>
+    <remap from="car_controls" to="/carla/hero/ackermann_drive"/>
   </node>
 </launch>
