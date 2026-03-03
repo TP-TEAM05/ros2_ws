@@ -18,7 +18,6 @@ RUN apt-get update && apt-get install -y \
 RUN pip3 install RPi.GPIO
 
 # Copy your existing ROS 2 workspace into the image
-COPY src ./src
 # Copy files into a dummy ubuntu directory
 RUN mkdir -p /home/ubuntu/ros2_ws/src/car_to_backend && \
     cp -r /ros2_ws/src/car_to_backend/src /home/ubuntu/ros2_ws/src/car_to_backend/
