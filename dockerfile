@@ -19,17 +19,10 @@ RUN pip3 install RPi.GPIO
 
 # Copy your existing ROS 2 workspace into the image
 # Copy files into a dummy ubuntu directory
-RUN mkdir -p /home/ubuntu/ros2_ws/src/car_to_backend && \
-    cp -r /ros2_ws/src/car_to_backend/src /home/ubuntu/ros2_ws/src/car_to_backend/
-
 # Copy config files y
 COPY confs /confs
 
 # Build the workspace
-RUN . /opt/ros/humble/setup.sh && \
-	apt update -y && apt upgrade -y && \
-	rosdep install -i --from-path src --rosdistro humble -y && \
-	colcon build
 
 WORKDIR /ros2_ws2
 
