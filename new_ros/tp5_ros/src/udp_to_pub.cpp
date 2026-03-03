@@ -16,7 +16,7 @@
 #include "nlohmann/json.hpp"
 
 #include "rclcpp/rclcpp.hpp"
-#include "ackermann_msgs/msg/ackermann_drive.hpp"
+#include "ackermann_msgs/msg/ackermann_drive_stamped.hpp"
 
 
 using json = nlohmann::json;  
@@ -36,7 +36,7 @@ bool interfaceIsUp(const std::string& interfaceName) {
 }
 
 void loadParams(std::string& ip, std::string& port) {
-  std::ifstream file("/confs/udp_server_config");
+  std::ifstream file("/home/filiphires/TP/ros2_ws/confs/udp_server_config");
 
   if (!file) {
     perror("UDP server config file not found");
@@ -55,7 +55,7 @@ public:
         sockfd_(-1)
   {
     RCLCPP_INFO(this->get_logger(), "Started");
-    publisher_ = this->create_publisher<ackermann_msgs::msg::AckermannDrive>("car_controls", 10);
+    publisher_ = this->create_publisher<ackermann_msgs::msg::AckermannDriveStamped>("car_controls", 10);
     timer_ = this->create_wall_timer(10ms, std::bind(&MinimalPublisher::timer_callback, this));
 
     // Setup UDP socket
@@ -144,17 +144,19 @@ private:
   
     // Publish only the extracted message part
     auto message = ackermann_msgs::msg::AckermannDrive();
+    auto submessage = ackermann_msgs::msg::AckermannDriveStamped();
     message.speed = std::stof(speed_str);
     message.steering_angle = std::stof(angle_str);
     message.steering_angle_velocity = 0.0;
     message.acceleration = 0.0;
     message.jerk = 0.0;
-    publisher_->publish(message);
+    submessage.drive=message;
+    publisher_->publish(submessage);
     RCLCPP_INFO(this->get_logger(), "[UDP_PUB] Published message: %s", speed_str.c_str());
   }
 
   rclcpp::TimerBase::SharedPtr timer_;
-  rclcpp::Publisher<ackermann_msgs::msg::AckermannDrive>::SharedPtr publisher_;
+  rclcpp::Publisher<ackermann_msgs::msg::AckermannDriveStamped>::SharedPtr publisher_;
   int sockfd_;
   struct sockaddr_in servaddr_, cliaddr_;
   char buff_[256];

@@ -23,7 +23,7 @@ COPY src ./src
 RUN mkdir -p /home/ubuntu/ros2_ws/src/car_to_backend && \
     cp -r /ros2_ws/src/car_to_backend/src /home/ubuntu/ros2_ws/src/car_to_backend/
 
-# Copy config files 
+# Copy config files y
 COPY confs /confs
 
 # Build the workspace

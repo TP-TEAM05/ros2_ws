@@ -4,3 +4,4 @@ log/**
 .gitignore
 .vscode
 CLAUDE.md
+confs/**

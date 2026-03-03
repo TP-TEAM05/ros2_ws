@@ -33,9 +33,9 @@ void loadParams(std::string &ip, std::string &port, std::string &car_vin, std::s
 
   std::ifstream file;
   if (enemy){
-    file.open("/confs/udp_client_enemy_config");
+    file.open("/home/filiphires/TP/ros2_ws/confs/udp_client_enemy_config");
   } else {
-    file.open("/confs/udp_client_config");
+    file.open("/home/filiphires/TP/ros2_ws/confs/udp_client_config");
   }
 
   if (!file)
@@ -128,8 +128,8 @@ class MinimalSubscriber: public rclcpp::Node
             // Calculate distance from origin
             dist_lidar = std::sqrt(x * x + y * y + z * z);
             
-            RCLCPP_INFO(this->get_logger(), "Middle point [%zu/%zu]: x=%.3f, y=%.3f, z=%.3f, dist=%.3f", 
-                        middle_index, num_points, x, y, z, dist_lidar);
+            //RCLCPP_INFO(this->get_logger(), "Middle point [%zu/%zu]: x=%.3f, y=%.3f, z=%.3f, dist=%.3f", 
+            //            middle_index, num_points, x, y, z, dist_lidar);
           } else {
             RCLCPP_WARN(this->get_logger(), "Invalid data offset for middle point");
           }
@@ -152,7 +152,7 @@ class MinimalSubscriber: public rclcpp::Node
       }
       
       void topic_callback_2(const sensor_msgs::msg::NavSatFix::SharedPtr msg) {
-        RCLCPP_INFO(this->get_logger(), "Test: %f", msg->longitude); // %s + c_str()
+        //RCLCPP_INFO(this->get_logger(), "Test: %f", msg->longitude); // %s + c_str()
 
         
         boost::posix_time::ptime t = boost::posix_time::microsec_clock::universal_time();
@@ -173,9 +173,9 @@ class MinimalSubscriber: public rclcpp::Node
         vehicle["longitude"] = msg->longitude;
         vehicle["latitude"] = msg->latitude;
         vehicle["gps_direction"] = msg->position_covariance_type;
-        vehicle["front_ultrasonic"] = std::stof("10");
+        vehicle["front_ultrasonic"] = std::stof("1000");
         vehicle["rear_ultrasonic"] = std::stof("10");
-        vehicle["front_lidar"] = dist_lidar;
+        vehicle["front_lidar"] = dist_lidar*100;
         vehicle["speed_front_left"] = std::stof("1.0");
         vehicle["speed_front_right"] = std::stof("1.0");
         vehicle["speed_rear_left"] = std::stof("1.0");
