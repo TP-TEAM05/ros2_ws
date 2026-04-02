@@ -36,7 +36,7 @@ bool interfaceIsUp(const std::string& interfaceName) {
 }
 
 void loadParams(std::string& ip, std::string& port) {
-  std::ifstream file("/home/filiphires/TP/ros2_ws/confs/udp_server_config");
+  std::ifstream file("/home/andrej/TP/ros2_ws/confs/udp_server_config");
 
   if (!file) {
     perror("UDP server config file not found");

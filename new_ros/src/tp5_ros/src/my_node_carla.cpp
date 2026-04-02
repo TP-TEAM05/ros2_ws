@@ -33,9 +33,9 @@ void loadParams(std::string &ip, std::string &port, std::string &car_vin, std::s
 
   std::ifstream file;
   if (enemy){
-    file.open("/home/filiphires/TP/ros2_ws/confs/udp_client_enemy_config");
+    file.open("/home/andrej/TP/ros2_ws/confs/udp_client_config_enemy");
   } else {
-    file.open("/home/filiphires/TP/ros2_ws/confs/udp_client_config");
+    file.open("/home/andrej/TP/ros2_ws/confs/udp_client_config");
   }
 
   if (!file)
