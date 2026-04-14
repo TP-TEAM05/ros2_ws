@@ -12,6 +12,9 @@
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
 
+/*
+THIS NODE IS MOST LIKELY NOT NEEDED BECAUSE THE VESC NODE SENDS SCAN DATA OVER ROS
+*/
 using namespace std::chrono_literals;
 
 void loadParams(std::string& dev_name){
