@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
     nlohmann-json3-dev \
     libcurl4-openssl-dev \
     libboost-all-dev \
+    ros-humble-asio-cmake-module \
     && rm -rf /var/lib/apt/lists/*
 
 # Install the Python package
