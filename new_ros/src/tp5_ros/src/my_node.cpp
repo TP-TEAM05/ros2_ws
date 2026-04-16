@@ -30,7 +30,7 @@ std::string vin;
 
 void loadParams(std::string &ip, std::string &port, std::string &car_vin, std::string &is_controlled_by_user)
 {
-  std::ifstream file("/confs/udp_client_config");
+  std::ifstream file("/home/andrej/TP/ros2_ws/confs/udp_client_config");
 
   if (!file)
   {
@@ -95,8 +95,8 @@ class MinimalSubscriber: public rclcpp::Node
       void topic_callback(const sensor_msgs::msg::LaserScan::SharedPtr msg) {
           RCLCPP_INFO(this->get_logger(), "Angle_min: %.3f", msg->angle_min);
           if (!msg->ranges.empty()) {
-            RCLCPP_INFO(this->get_logger(), "Range[0]: %.3f", msg->ranges[(int)(msg->range_min+msg->range_max)/2]);
-            dist_lidar = msg->ranges[(int)(msg->range_min+msg->range_max)/2];
+            RCLCPP_INFO(this->get_logger(), "Range[0]: %.3f", msg->ranges[(int)(msg->ranges.size() / 2)]);
+            dist_lidar = msg->ranges[(int)(msg->ranges.size() / 2)];
           } else {
             RCLCPP_WARN(this->get_logger(), "LaserScan ranges[] is empty");
           }
