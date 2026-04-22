@@ -24,6 +24,10 @@
 using std::placeholders::_1;
 using json = nlohmann::ordered_json;
 
+#define vision_angle 60.0f
+#define pi 3.14159265f
+#define rad_half (vision_angle/2)*(pi/180.0f)
+
 bool is_controlled_by_user;
 std::string vin;
 
@@ -95,8 +99,15 @@ class MinimalSubscriber: public rclcpp::Node
       void topic_callback(const sensor_msgs::msg::LaserScan::SharedPtr msg) {
           RCLCPP_INFO(this->get_logger(), "Angle_min: %.3f", msg->angle_min);
           if (!msg->ranges.empty()) {
-            RCLCPP_INFO(this->get_logger(), "Range[0]: %.3f", msg->ranges[(int)(msg->ranges.size() / 2)]);
-            dist_lidar = msg->ranges[(int)(msg->ranges.size() / 2)];
+            float min_dist = 0.0f;
+            int steps = rad_half / msg->angle_increment;
+            for (int i = msg->ranges.size() / 2 - steps; i <= msg->ranges.size() / 2 + steps; ++i) {
+              if (min_dist == 0.0f || msg->ranges[i] < min_dist) {
+                min_dist = msg->ranges[i];
+              }
+            }
+            RCLCPP_INFO(this->get_logger(), "Lowest range: %.3f", min_dist);
+            dist_lidar = min_dist;
           } else {
             RCLCPP_WARN(this->get_logger(), "LaserScan ranges[] is empty");
           }
