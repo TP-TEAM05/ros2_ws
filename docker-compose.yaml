@@ -7,6 +7,3 @@ services:
       - ./confs:/confs
     stdin_open: true
     tty: true
-    environment:
-      - ROS_DOMAIN_ID=2
-      - ROS_LOCALHOST_ONLY=0

@@ -1,6 +1,6 @@
-build/**
-install/**
-log/**
+**/build/**
+**/install/**
+**/log/**
 .gitignore
 .vscode
 CLAUDE.md
