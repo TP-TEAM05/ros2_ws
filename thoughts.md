@@ -7,18 +7,18 @@ vesc_to_odom - berie vesc voltage atd. a vytvara odom
 
 topics:
 
-gps - pub ✅ sub ✅
-lidar - pub(vesc node v jetson) ✅ sub ✅
-odom - pub ✅ sub ✅
-ackermann - pub ✅ sub ✅
+gps - pub ✅ sub ✅  
+lidar - pub(vesc node v jetson) ✅ sub ✅  
+odom - pub ✅ sub ✅  
+ackermann - pub ✅ sub ✅  
 
 TODO:
- - overit spravnost topic mien z jetsonu
- - v launch file zmenit hodnoty asi podla vesc configu
- - ak funguje ^ : spravit novy launch file z jetsonu aj z recofiit pre ostatne auta
+ - overit spravnost topic mien z jetsonu ✅ 
+ - v launch file zmenit hodnoty asi podla vesc configu ✅ 
+ - ak funguje ^ : spravit novy launch file z jetsonu aj z recofiit pre ostatne auta ✅(half)
 
 zapinanie:
  - pred zapnutim zmenit v my_node.cpp a udp_to_pub.cpp lokaciu config filov
  - prekompilovat cez `colcon build`
- - spustit vesc node ktorym sme ovladali auto cez laptop a skusali lidar
+ - spustit vesc node ktorym sme ovladali auto cez laptop a skusali lidar `ros2 launch f1tenth_stack bringup_launch.py`
  - v druhom terminali spustit `ros2 launch tp5_ros vesc_gps_sim_launch.xml`

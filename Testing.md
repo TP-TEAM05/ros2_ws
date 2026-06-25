@@ -7,7 +7,7 @@ Start reco fiit docker-compose on a linux machine
 
 ### Prerequisities
 
-chance directory to tp5_ros
+change directory to tp5_ros
 
 ```bash
 cd new_ros/tp5_ros
@@ -29,7 +29,7 @@ C4RF117S7U0000002
 
 - Source the tp5_ros ros module `source install/setup.bash`
 
-- Build the ROS2 after you make a change in the code. `colcon build`
+- Build the ROS2 after you make a change in the code `colcon build` . And source install again.
 
 - Run the carla module `ros2 launch tp5_ros carla_sim_launch.xml`
 
